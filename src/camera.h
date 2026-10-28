@@ -1,0 +1,3 @@
+/*
+this file holds the definition of the camera command class
+*/

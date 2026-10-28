@@ -1,0 +1,3 @@
+/*
+This file holds the abstract command class definition
+*/
