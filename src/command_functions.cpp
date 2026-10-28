@@ -9,4 +9,4 @@ This is where all of the functions for the commands will be implemented
 
 /*----------Camera Commands------------*/
 
-/*----------Abstract Commands------------*/
+/*----------Abstract Commands------------*
