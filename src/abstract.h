@@ -14,6 +14,5 @@ class Command {
      string priority;
      string get_id();
      string get_description();
-     
-
+     friend ostream& operator<<(ostream&, Command);
 };
