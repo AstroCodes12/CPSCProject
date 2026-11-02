@@ -12,7 +12,7 @@ class Command {
      int timeStep;
     public:
      string priority;
-     string get_id();
+     int get_id();
      string get_description();
      friend ostream& operator<<(ostream&, Command);
 };
