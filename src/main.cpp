@@ -8,22 +8,47 @@ This is the main file that will be called
 
 bool shouldEnd = false;
 
+
+/* TODO:
+* Command Page Function
+*   Prints all the commands in the schedule loop
+*   Prompts to enter create or send (explain how to enter correctly)
+
+* Add New Command Function(?)
+*   Adds to both scheduler and display heaps
+
+* Terminate Function(?)
+*   ends loop and closes threading
+
+* Run Command Function (add to log)
+*   Adds command to log
+*   sleeps thread for timeStep % 10
+*   Removes command from heap
+
+* Create Command function
+*   Walks user thru making a command (what type (child) of command, enter all variables)
+*   Adds command to available command table
+
+* Send Command Function
+*   Allows user to send existing Command with command name
+*   Searches available commands
+*   Adds command to new command heap
+*   runs heap sort
+*/
+
 void display_loop() {
     while (true) {
         /*
-        * If commands in heap: 
-        *   print command page (make function to do this)
-        * If no commands in heap: 
-        *   prompt to enter command (make function to do this)
-        *   Note: enter command waits for user so its not printing infinitly
-        *   put user input into new Command queue
         * 
-        * If is terminate command
-        *   terminate
-        * If is not terminate
-        *    display command page
-        *    prompt to enter command
-        */
+        * print command page (make function to do this)
+        * prompt to enter create or send (make function to do this)
+        *   if create:
+        *       run create
+        *   if send:
+        *       run send
+        *   Note: enter command function waits for user so its not printing infinitly
+        * 
+        * return to top
 
         /*
         * Notes: 
@@ -35,26 +60,22 @@ void schedule_loop() {
     while (true) {
         /*
         * If heap is empty:
-        *  If new command:
-        *      insert into heap
-        *      run Heap sort function (might be built into c++ std lib)
-        *      return to top
-        *  If no new command, return to top
-        */
-
-        /*If heap is not empty:
-        *  Run command on top of heap
-        *  If is terminate
+        *   If new commands:
+        *       add all new commands to schedule heap
+        *       run heap sort
+        *   return to top
+        *
+        * If heap is not empty:
+        *   If is terminate
         *      terminate
-        *  else
-        *      add to logs.
-        *  
-        *  If new command:
-        *      add to heap
-        *      run heap sort
-        *       return to top
-        *  else:
-        *      return to top
+        *   else
+        *      add to logs
+        *      sleep for timeStep % 10
+        * 
+        *  If new Commands:
+        *       add all new commands to schedule heap
+        *       run heap sort
+        *  return to top
         */
     }
 }
@@ -73,9 +94,14 @@ int main() {
     * Command Heap (main strucutre)
     *   Should be a priority queue heap
     * 
-    * New Command heap:
-    *   Should be priority heap too
-    *   allows multiple new commands to be entered 
+    * New Command Heap
+    *   Priority Queue Heap
+    *   Allows each thread to run asynchronously
+    * 
+    * Available Command Hash Table
+    *   Table of all available commands. Organized by ID
+    * 
+    * 
     */
 
     /*
