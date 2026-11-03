@@ -24,6 +24,10 @@ string Command::get_description(){
     return description;
 }
 
+int Command::get_timestep(){
+    return timeStep;
+}
+
 ostream& operator<<(ostream& os, Command c) {
     os << "ID: " << c.id << " | Description: " << c.description << " | TimeStep: " << c.timeStep << " | Priority: " << c.priority << endl;
     return os;

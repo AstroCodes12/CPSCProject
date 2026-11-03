@@ -89,12 +89,15 @@ int main() {
 
     // Data Structures
     //C++ has some standard libs for heaps (std::priority_queue)
-    
+    vector<Command> commands = {{0, "Initialize", 1}};
+
     /* 
     * Command Heap (main strucutre)
-    *   Should be a priority queue heap
-    * 
-    * New Command Heap
+    */
+    make_heap(commands.begin(), commands.end());
+    
+
+    /* New Command Heap
     *   Priority Queue Heap
     *   Allows each thread to run asynchronously
     * 
