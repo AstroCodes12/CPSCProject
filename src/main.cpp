@@ -5,7 +5,6 @@ This is the main file that will be called
 #include "command_functions.cpp"
 #include <vector>
 #include <thread>
-#include <algorithm>
 
 bool shouldEnd = false;
 
@@ -14,7 +13,17 @@ bool shouldEnd = false;
 * Command Page Function
 *   Prints all the commands in the schedule loop
 *   Prompts to enter create or send (explain how to enter correctly)
+*/
 
+void cmd_page() {
+    cout << "********** COMMAND DASHBOARD **********" << endl;
+    cout << endl;
+    cout << "Clock: " << clock() << endl;
+    cout << "Command Queue:" << endl;
+    
+}
+
+/*
 * Add New Command Function(?)
 *   Adds to both scheduler and display heaps
 
@@ -57,24 +66,6 @@ void display_loop() {
     }
 }
 
-vector<Command> queue = {};
-vector<Command> join_queue = {};
-
-// This function will be used to combine both heaps into one
-void combine_heaps() {
-
-}
-
-// Logs the command that gets sent
-const string LOG_FILE = "log.txt"; // we could change this based on an arg sent to main when run
-void logCommand(Command sent) {
-
-}
-
-void sendCommand(Command toSend) {
-    // Command Sent!
-}
-
 void schedule_loop() {
     while (true) {
         /*
@@ -96,21 +87,6 @@ void schedule_loop() {
         *       run heap sort
         *  return to top
         */
-        if (!join_queue.empty()) {
-            combine_heaps();
-        }
-        if (queue.empty()) {
-            continue;
-        }
-        Command toSend = queue.front();
-        pop_heap(queue.begin(), queue.end());
-        logCommand(toSend);
-        if (toSend.get_id() == 0) { // 0 = terminate
-            shouldEnd = true;
-            break;
-        }
-        sendCommand(toSend);
-        _sleep(toSend.get_timestep() / 10); // from stdlib.h
     }
 }
 
@@ -123,15 +99,12 @@ int main() {
 
     // Data Structures
     //C++ has some standard libs for heaps (std::priority_queue)
-    vector<Command> commands = {{0, "Initialize", 1}};
 
     /* 
     * Command Heap (main strucutre)
-    */
-    make_heap(commands.begin(), commands.end());
-    
-
-    /* New Command Heap
+    *   Should be a priority queue heap
+    * 
+    * New Command Heap
     *   Priority Queue Heap
     *   Allows each thread to run asynchronously
     * 
