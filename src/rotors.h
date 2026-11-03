@@ -14,7 +14,8 @@ enum class Rotor{
     Rotor1, //0
     Rotor2, //1
     Rotor3, //2
-    Rotor4 //3
+    Rotor4, //3
+    All
 };
 
 //Rotor Child Class
@@ -23,6 +24,7 @@ class RotorCommand : public Command {
     private:
      Rotor rotorID;
     public:
+     RotorCommand(string d, int p, Rotor r) : rotorID(r), Command(d, p){};
      void update_rotorID(Rotor rotorID);
 };
 

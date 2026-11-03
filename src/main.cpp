@@ -2,9 +2,11 @@
 This is the main file that will be called
 */
 #include "abstract.h"
+#include "rotors.h"
 #include "command_functions.cpp"
 #include <vector>
 #include <thread>
+#include <algorithm>
 
 bool shouldEnd = false;
 
@@ -56,6 +58,24 @@ void display_loop() {
     }
 }
 
+vector<Command> queue = {};
+vector<Command> join_queue = {};
+
+// This function will be used to combine both heaps into one
+void combine_heaps() {
+
+}
+
+// Logs the command that gets sent
+const string LOG_FILE = "log.txt"; // we could change this based on an arg sent to main when run
+void logCommand(Command sent) {
+
+}
+
+void sendCommand(Command toSend) {
+    // Command Sent!
+}
+
 void schedule_loop() {
     while (true) {
         /*
@@ -77,8 +97,34 @@ void schedule_loop() {
         *       run heap sort
         *  return to top
         */
+        // check if there is/are new commands to be added
+        if (!join_queue.empty()) {
+            combine_heaps();
+        }
+        // if there are no commands restart the loop
+        if (queue.empty()) {
+            continue;
+        }
+        
+        // Get and pop from the heap/queue
+        Command toSend = queue.front();
+        pop_heap(queue.begin(), queue.end());
+        
+        logCommand(toSend);
+        if (toSend.get_id() == 0) { // 0 = terminate
+            shouldEnd = true;
+            break;
+        }
+        sendCommand(toSend);
+        _sleep(toSend.get_timestep() / 10); // from stdlib.h
     }
 }
+
+struct priority{
+    bool operator()(const Command& c1,const Command& c2) const{
+        return c1.priority>c2.priority;
+    }
+};
 
 
 int main() {
@@ -87,28 +133,33 @@ int main() {
     threads.push_back(thread(schedule_loop));
     threads.push_back(thread(display_loop)); // We could do this in this main but it might be easier in it's own function
 
-    // Data Structures
-    //C++ has some standard libs for heaps (std::priority_queue)
-    
-    /* 
-    * Command Heap (main strucutre)
-    *   Should be a priority queue heap
-    * 
-    * New Command Heap
-    *   Priority Queue Heap
-    *   Allows each thread to run asynchronously
-    * 
-    * Available Command Hash Table
-    *   Table of all available commands. Organized by ID
-    * 
-    * 
+    //-------Data Structures----------------------------------
+    /* Available Command Hash Table
+    *  Table of all available commands. Vector index is used as command ID
     */
 
-    /*
-    * Note:
-    *   Could be reduced to one heap if display loop is responsible for insterting and sorting
-    *   however this could cause issues with schedule loop because they are asynchronous
+    Command* cmd[] = {
+        new Command("Terminate", 1),
+        new Command("Initialize", 1),
+        new RotorCommand("Init_Rotors", 2, Rotor::All),
+        new Actions("Takeoff", 2, Action::TAKE_OFF), 
+        new Camera("Camera_Init" ,2, CameraMode::ON)
+    };
+
+    /* Command Heap (main structure)
+    *   min heap for scheduler thread
+    *   root node will run. Schedule Thread will add all new commands from newCmdHeap to this
     */
+    vector<Command> cmdHeap;
+    make_heap(cmdHeap.begin(), cmdHeap.end(), priority());
+    
+    /* New Command Heap
+    *   min Heap for interface thread
+    *   queues commands while schedule thread is running
+    *   Allows each thread to run asynchronously
+    */
+    vector<Command> newCmdHeap = {*cmd[1], *cmd[2], *cmd[3], *cmd[4]};
+    make_heap(newCmdHeap.begin(), newCmdHeap.end(), priority());
 
     // shouldEnd can change when a end command is input.
     while (!shouldEnd) {

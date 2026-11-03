@@ -7,12 +7,12 @@ using namespace std;
 
 class Command {
     private:
-     int id;
      string description;
      int timeStep;
     public:
-     string priority;
-     int get_id();
+     int priority;
+     Command(string d, int p) : description(d), priority(p){};
      string get_description();
+     int get_timestep();
      friend ostream& operator<<(ostream&, Command);
 };
