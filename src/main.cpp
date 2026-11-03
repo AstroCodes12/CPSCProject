@@ -5,6 +5,7 @@ This is the main file that will be called
 #include "command_functions.cpp"
 #include <vector>
 #include <thread>
+#include <algorithm>
 
 bool shouldEnd = false;
 
@@ -56,6 +57,24 @@ void display_loop() {
     }
 }
 
+vector<Command> queue = {};
+vector<Command> join_queue = {};
+
+// This function will be used to combine both heaps into one
+void combine_heaps() {
+
+}
+
+// Logs the command that gets sent
+const string LOG_FILE = "log.txt"; // we could change this based on an arg sent to main when run
+void logCommand(Command sent) {
+
+}
+
+void sendCommand(Command toSend) {
+    // Command Sent!
+}
+
 void schedule_loop() {
     while (true) {
         /*
@@ -77,6 +96,21 @@ void schedule_loop() {
         *       run heap sort
         *  return to top
         */
+        if (!join_queue.empty()) {
+            combine_heaps();
+        }
+        if (queue.empty()) {
+            continue;
+        }
+        Command toSend = queue.front();
+        pop_heap(queue.begin(), queue.end());
+        logCommand(toSend);
+        if (toSend.get_id() == 0) { // 0 = terminate
+            shouldEnd = true;
+            break;
+        }
+        sendCommand(toSend);
+        _sleep(toSend.get_timestep() / 10); // from stdlib.h
     }
 }
 
