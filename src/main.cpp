@@ -96,14 +96,19 @@ void schedule_loop() {
         *       run heap sort
         *  return to top
         */
+        // check if there is/are new commands to be added
         if (!join_queue.empty()) {
             combine_heaps();
         }
+        // if there are no commands restart the loop
         if (queue.empty()) {
             continue;
         }
+        
+        // Get and pop from the heap/queue
         Command toSend = queue.front();
         pop_heap(queue.begin(), queue.end());
+        
         logCommand(toSend);
         if (toSend.get_id() == 0) { // 0 = terminate
             shouldEnd = true;
