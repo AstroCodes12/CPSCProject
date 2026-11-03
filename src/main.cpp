@@ -2,6 +2,7 @@
 This is the main file that will be called
 */
 #include "abstract.h"
+#include "rotors.h"
 #include "command_functions.cpp"
 #include <vector>
 #include <thread>
@@ -119,6 +120,12 @@ void schedule_loop() {
     }
 }
 
+struct priority{
+    bool operator()(const Command& c1,const Command& c2) const{
+        return c1.priority>c2.priority;
+    }
+};
+
 
 int main() {
     //Threading
@@ -126,31 +133,33 @@ int main() {
     threads.push_back(thread(schedule_loop));
     threads.push_back(thread(display_loop)); // We could do this in this main but it might be easier in it's own function
 
-    // Data Structures
-    //C++ has some standard libs for heaps (std::priority_queue)
-    vector<Command> commands = {{0, "Initialize", 1}};
-
-    /* 
-    * Command Heap (main strucutre)
+    //-------Data Structures----------------------------------
+    /* Available Command Hash Table
+    *  Table of all available commands. Vector index is used as command ID
     */
-    make_heap(commands.begin(), commands.end());
+
+    Command* cmd[] = {
+        new Command("Terminate", 1),
+        new Command("Initialize", 1),
+        new RotorCommand("Init_Rotors", 2, Rotor::All),
+        new Actions("Takeoff", 2, Action::TAKE_OFF), 
+        new Camera("Camera_Init" ,2, CameraMode::ON)
+    };
+
+    /* Command Heap (main structure)
+    *   min heap for scheduler thread
+    *   root node will run. Schedule Thread will add all new commands from newCmdHeap to this
+    */
+    vector<Command> cmdHeap;
+    make_heap(cmdHeap.begin(), cmdHeap.end(), priority());
     
-
     /* New Command Heap
-    *   Priority Queue Heap
+    *   min Heap for interface thread
+    *   queues commands while schedule thread is running
     *   Allows each thread to run asynchronously
-    * 
-    * Available Command Hash Table
-    *   Table of all available commands. Organized by ID
-    * 
-    * 
     */
-
-    /*
-    * Note:
-    *   Could be reduced to one heap if display loop is responsible for insterting and sorting
-    *   however this could cause issues with schedule loop because they are asynchronous
-    */
+    vector<Command> newCmdHeap = {*cmd[1], *cmd[2], *cmd[3], *cmd[4]};
+    make_heap(newCmdHeap.begin(), newCmdHeap.end(), priority());
 
     // shouldEnd can change when a end command is input.
     while (!shouldEnd) {

@@ -3,6 +3,8 @@ This is where all of the functions for the commands will be implemented
 */
 
 #include "rotors.h"
+#include "actions.h"
+#include "camera.h"
 #include "abstract.h"
 #include <iostream>
 using namespace std;
@@ -17,9 +19,6 @@ void RotorCommand::update_rotorID(Rotor rotorID) {
 /*----------Camera Commands------------*/
 
 /*----------Abstract Commands------------*/
-int Command::get_id(){
-    return id;
-}
 string Command::get_description(){
     return description;
 }
@@ -29,6 +28,6 @@ int Command::get_timestep(){
 }
 
 ostream& operator<<(ostream& os, Command c) {
-    os << "ID: " << c.id << " | Description: " << c.description << " | TimeStep: " << c.timeStep << " | Priority: " << c.priority << endl;
+    os << " | Description: " << c.description << " | TimeStep: " << c.timeStep << " | Priority: " << c.priority << endl;
     return os;
 }
