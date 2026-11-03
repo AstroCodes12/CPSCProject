@@ -89,7 +89,7 @@ int main() {
 
     // Data Structures
     //C++ has some standard libs for heaps (std::priority_queue)
-
+    
     /* 
     * Command Heap (main strucutre)
     *   Should be a priority queue heap
