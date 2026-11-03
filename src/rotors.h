@@ -3,9 +3,6 @@ This file holds the definitions for the rotor commands
 */
 #ifndef ROTORS_H
 #define ROTORS_H
-
-#include <iostream>
-using namespace std;
 #include "abstract.h"
 
 //Rotor Enum
@@ -24,7 +21,8 @@ class RotorCommand : public Command {
     private:
      Rotor rotorID;
     public:
-     RotorCommand(string d, int p, Rotor r) : rotorID(r), Command(d, p){};
+     RotorCommand(string d, int p, Rotor r) : Command(d, p), rotorID(r){};
+     RotorCommand();
      void update_rotorID(Rotor rotorID);
 };
 

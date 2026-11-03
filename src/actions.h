@@ -14,11 +14,12 @@ enum class Action {
     TURN_AROUND
 };
 
-class Actions : public Command {
+class ActionCommand : public Command {
 private:
     Action actionType;
 public:
-    Actions(string d, int p, Action a) : actionType(a), Command(d, p){};
+    ActionCommand(string d, int p, Action a) : Command(d, p), actionType(a){};
+    ActionCommand();
     void update_action(Action);
 };
 #endif

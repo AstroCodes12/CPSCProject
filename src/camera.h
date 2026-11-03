@@ -18,11 +18,12 @@ enum class CameraMode {
     OFF
 };
 
-class Camera : public Command {
+class CameraCommand : public Command {
     private:
         CameraMode mode;
     public:
-        Camera(string d, int p, CameraMode c) : mode(c), Command(d, p){};
+        CameraCommand(string d, int p, CameraMode c) : Command(d, p), mode(c){};
+        CameraCommand();
 };
 
 #endif

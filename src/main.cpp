@@ -4,6 +4,7 @@ This is the main file that will be called
 #include "abstract.h"
 #include "rotors.h"
 #include "command_functions.cpp"
+
 #include <vector>
 #include <thread>
 #include <algorithm>
@@ -61,6 +62,32 @@ void display_loop() {
 vector<Command> queue = {};
 vector<Command> join_queue = {};
 
+    //-------Data Structures----------------------------------
+    /* Available Command Hash Table
+    *  Table of all available commands. Vector index is used as command ID
+    */
+namespace data {
+    Command* cmd[] = {
+        new Command("Terminate", 1),
+        new Command("Initialize", 1),
+        new RotorCommand("Init_Rotors", 2, Rotor::All),
+        new ActionCommand("Takeoff", 2, Action::TAKE_OFF), 
+        new CameraCommand("Camera_Init" ,2, CameraMode::ON)
+    };
+
+    /* Command Heap (main structure)
+    *   min heap for scheduler thread
+    *   root node will run. Schedule Thread will add all new commands from newCmdHeap to this
+    */
+    vector<Command> cmdHeap;
+    
+    /* New Command Heap
+    *   min Heap for interface thread
+    *   queues commands while schedule thread is running
+    *   Allows each thread to run asynchronously
+    */
+    vector<Command> newCmdHeap = {*cmd[1], *cmd[2], *cmd[3], *cmd[4]};
+}
 // This function will be used to combine both heaps into one
 void combine_heaps() {
 
@@ -134,32 +161,11 @@ int main() {
     threads.push_back(thread(display_loop)); // We could do this in this main but it might be easier in it's own function
 
     //-------Data Structures----------------------------------
-    /* Available Command Hash Table
-    *  Table of all available commands. Vector index is used as command ID
-    */
-
-    Command* cmd[] = {
-        new Command("Terminate", 1),
-        new Command("Initialize", 1),
-        new RotorCommand("Init_Rotors", 2, Rotor::All),
-        new Actions("Takeoff", 2, Action::TAKE_OFF), 
-        new Camera("Camera_Init" ,2, CameraMode::ON)
-    };
-
-    /* Command Heap (main structure)
-    *   min heap for scheduler thread
-    *   root node will run. Schedule Thread will add all new commands from newCmdHeap to this
-    */
-    vector<Command> cmdHeap;
-    make_heap(cmdHeap.begin(), cmdHeap.end(), priority());
+    /* Command Heap (main structure)*/
+    make_heap(data::cmdHeap.begin(), data::cmdHeap.end(), priority());
     
-    /* New Command Heap
-    *   min Heap for interface thread
-    *   queues commands while schedule thread is running
-    *   Allows each thread to run asynchronously
-    */
-    vector<Command> newCmdHeap = {*cmd[1], *cmd[2], *cmd[3], *cmd[4]};
-    make_heap(newCmdHeap.begin(), newCmdHeap.end(), priority());
+    /* New Command Heap*/
+    make_heap(data::newCmdHeap.begin(), data::newCmdHeap.end(), priority());
 
     // shouldEnd can change when a end command is input.
     while (!shouldEnd) {
