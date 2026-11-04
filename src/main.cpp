@@ -8,18 +8,86 @@ This is the main file that will be called
 
 #include <vector>
 #include <thread>
+#include <mutex>    // This is used to lock the command queue when adding new commands
 #include <algorithm>
 #include <fstream>
 #include <stdlib.h>
+using namespace std;
 
-bool shouldEnd = false;
+bool shouldEnd = false; // This bool will be used to signal the threads to end when a terminate command is sent
+mutex commandMutex; // This mutex will be used to lock the command queue when adding new commands
 
+struct priority {
+    bool operator() (const shared_ptr<Command>& c1, const shared_ptr<Command>& c2) const {
+        return c1->priority > c2->priority;
+    }
+};
+
+vector<shared_ptr<Command>> queue1;
+
+vector<shared_ptr<Command>> join_queue; // This queue will be used to add new commands to the main queue
+
+vector<shared_ptr<Command>> availableCommands; // This vector will be used to store all available commands
+
+const string LOG_FILE = "log.txt"; // we could change this based on an arg sent to main when run
+
+namespace data {
+    vector<shared_ptr<Command>> cmd = {
+        make_shared<Command> ("Terminate", 1),
+        make_shared<Command> ("Initialize", 2),
+        make_share<RotorCommands> ("Init_Rotors", 3, Rotor::All),
+        make_shared<ActionCommand>("Takeoff", 4, Action::TAKE_OFF),
+        make_shared<CameraCOmmand>("Camera_Init", 5, CameraMode::ON)
+    };
+}
 
 /* TODO:
 * Command Page Function
 *   Prints all the commands in the schedule loop
 *   Prompts to enter create or send (explain how to enter correctly)
+*/
+void cmd_page() {
+    cout << "\n********** COMMAND DASHBOARD **********\n" << endl;
+    cout << "\nCurrent Command Queue: \n" << endl;
+    
+    {
+        lock_guard<mutex> lock(commandMutex);
 
+        vector<shared_ptr<Command>> temp = queue1; // Create a copy of the queue to avoid modifying the original
+
+        make_heap(temp.begin(), temp.end(), priority());
+
+        if (temp.empty()) {
+            cout << "No commands in queue." << endl;
+        }
+        while (!temp.empty()) {
+            cout << *temp.front();
+            pop_heap(temp.begin(), temp.end(), priority());
+            temp.pop_back();
+
+        }
+    }
+
+    cout << "\nAvailable Commands: \n";
+
+    {
+        lock_guard<mutex> lock(commandMutex);
+
+        for (const auto& cmd : availableCommands) {
+            cout << *cmd;
+        }
+    }
+
+    cout << "\n************************************\n";
+
+    cout << "1. Create Command\n";
+    cout << "2. Send Command\n";
+    cout << "3. Terminate Program\n";
+    cout << "\nPlease enter your choice: ";
+}
+
+
+/*
 * Add New Command Function(?)
 *   Adds to both scheduler and display heaps
 
