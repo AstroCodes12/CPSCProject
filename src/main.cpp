@@ -103,7 +103,7 @@ void sendCommand(Command toSend) {
     // Command Sent!
 }
 
-void schedule_loop() {
+void schedule_loop(vector<Command> queue, vector<Command> join_queue) {
     while (true) {
         /*
         * If heap is empty:
