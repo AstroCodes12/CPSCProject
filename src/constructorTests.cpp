@@ -1,4 +1,4 @@
-#include "C:\Users\ryanh_t\OneDrive\Desktop\SchoolWork\CPSCProject\src\command_functions.cpp"
+#include "command_functions.cpp"
 
 #include <vector>
 
@@ -26,7 +26,15 @@ namespace data {
     vector<Command> newCmdHeap = {*cmd[1], *cmd[2], *cmd[3], *cmd[4]};
 }
 
+
 int main() {
+        //-------Data Structures----------------------------------
+    /* Command Heap (main structure)*/
+    make_heap(data::cmdHeap.begin(), data::cmdHeap.end(), priority());
+    
+    /* New Command Heap*/
+    make_heap(data::newCmdHeap.begin(), data::newCmdHeap.end(), priority());
+    
     int index;
     create(data::newCmdHeap);
     cout << "Index: ";
