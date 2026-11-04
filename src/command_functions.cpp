@@ -95,6 +95,14 @@ ostream& operator<<(ostream& os, Command c) {
     return os;
 }
 
+bool operator==(Command c1, Command c2){
+    if (c1.description == c2.description && c1.priority == c2.priority && c1.timeStep == c2.timeStep) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 Command::Command() {
     bool pass = false;
     cout << "Describe the Command in 1-2 words (e.g. Initialize Camera): \n";

@@ -4,10 +4,13 @@ This is the main file that will be called
 #include "abstract.h"
 #include "rotors.h"
 #include "command_functions.cpp"
+#include "scheduleFunctions.cpp"
 
 #include <vector>
 #include <thread>
 #include <algorithm>
+#include <fstream>
+#include <stdlib.h>
 
 bool shouldEnd = false;
 
@@ -88,22 +91,31 @@ namespace data {
     */
     vector<Command> newCmdHeap = {*cmd[1], *cmd[2], *cmd[3], *cmd[4]};
 }
-// This function will be used to combine both heaps into one
-void combine_heaps() {
-
-}
 
 // Logs the command that gets sent
 const string LOG_FILE = "log.txt"; // we could change this based on an arg sent to main when run
+// Logs the command that gets sent
 void logCommand(Command sent) {
-
+    ofstream log(LOG_FILE, ios::app);
+    log << sent;
+    log.close();
 }
 
 void sendCommand(Command toSend) {
     // Command Sent!
+    data::cmdHeap.push_back(toSend);
+    push_heap(data::cmdHeap.begin(), data::cmdHeap.end(), priority());
 }
 
-void schedule_loop(vector<Command> queue, vector<Command> join_queue) {
+// This function will be used to combine both heaps into one
+void combine_heaps() {
+    for (int i = 0; i < data::newCmdHeap.size(); i++) {
+        data::cmdHeap.push_back(data::newCmdHeap[i]);
+    }
+    make_heap(data::cmdHeap.begin(), data::cmdHeap.end(), priority());
+}
+
+void schedule_loop(vector<Command> &queue, vector<Command> &join_queue) {
     while (true) {
         /*
         * If heap is empty:
@@ -124,6 +136,7 @@ void schedule_loop(vector<Command> queue, vector<Command> join_queue) {
         *       run heap sort
         *  return to top
         */
+
         // check if there is/are new commands to be added
         if (!join_queue.empty()) {
             combine_heaps();
@@ -138,7 +151,7 @@ void schedule_loop(vector<Command> queue, vector<Command> join_queue) {
         pop_heap(queue.begin(), queue.end());
         
         logCommand(toSend);
-        if (toSend.get_id() == 0) { // 0 = terminate
+        if (toSend == *data::cmd[0]) { // 0 = terminate
             shouldEnd = true;
             break;
         }

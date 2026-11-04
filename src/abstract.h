@@ -18,6 +18,7 @@ class Command {
      string get_description();
      int get_timestep();
      friend ostream& operator<<(ostream&, Command);
+     friend bool operator==(Command, Command);
 };
 
 #endif
