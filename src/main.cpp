@@ -6,39 +6,40 @@ This is the main file that will be called
 #include "command_functions.cpp"
 #include "scheduleFunctions.cpp"
 
-#include <vector>
 #include <thread>
-#include <mutex>    // This is used to lock the command queue when adding new commands
-#include <algorithm>
 #include <fstream>
-#include <stdlib.h>
-using namespace std;
 
 bool shouldEnd = false; // This bool will be used to signal the threads to end when a terminate command is sent
-mutex commandMutex; // This mutex will be used to lock the command queue when adding new commands
 
-struct priority {
-    bool operator() (const shared_ptr<Command>& c1, const shared_ptr<Command>& c2) const {
-        return c1->priority > c2->priority;
-    }
-};
-
-vector<shared_ptr<Command>> queue1;
-
-vector<shared_ptr<Command>> join_queue; // This queue will be used to add new commands to the main queue
-
-vector<shared_ptr<Command>> availableCommands; // This vector will be used to store all available commands
-
-const string LOG_FILE = "log.txt"; // we could change this based on an arg sent to main when run
-
+    //-------Data Structures----------------------------------
+    /* Available Command Hash Table
+    *  Table of all available commands. Vector index is used as command ID
+    */
 namespace data {
-    vector<shared_ptr<Command>> cmd = {
-        make_shared<Command> ("Terminate", 1),
-        make_shared<Command> ("Initialize", 2),
-        make_share<RotorCommands> ("Init_Rotors", 3, Rotor::All),
-        make_shared<ActionCommand>("Takeoff", 4, Action::TAKE_OFF),
-        make_shared<CameraCOmmand>("Camera_Init", 5, CameraMode::ON)
+    Command* cmd[] = {
+        new Command("Terminate", 1),
+        new Command("Initialize", 1),
+        new RotorCommand("Init_Rotors", 2, Rotor::All),
+        new ActionCommand("Takeoff", 2, Action::TAKE_OFF), 
+        new CameraCommand("Camera_Init" ,2, CameraMode::ON)
     };
+
+    /* Command Heap (main structure)
+    *   min heap for scheduler thread
+    *   root node will run. Schedule Thread will add all new commands from newCmdHeap to this
+    */
+    vector<Command> cmdHeap;
+    
+    /* New Command Heap
+    *   min Heap for interface thread
+    *   queues commands while schedule thread is running
+    *   Allows each thread to run asynchronously
+    */
+    vector<Command> newCmdHeap = {*cmd[1], *cmd[2], *cmd[3], *cmd[4]};
+
+    /* Command List
+    */
+   vector<Command> commandList = {};
 }
 
 /* TODO:
@@ -49,33 +50,23 @@ namespace data {
 void cmd_page() {
     cout << "\n********** COMMAND DASHBOARD **********\n" << endl;
     cout << "\nCurrent Command Queue: \n" << endl;
-    
-    {
-        lock_guard<mutex> lock(commandMutex);
 
-        vector<shared_ptr<Command>> temp = queue1; // Create a copy of the queue to avoid modifying the original
+    const vector<Command> temp = data::cmdHeap; // Create a copy of the queue to avoid it being modified mid print
 
-        make_heap(temp.begin(), temp.end(), priority());
+    make_heap(temp.begin(), temp.end(), priority());
 
-        if (temp.empty()) {
-            cout << "No commands in queue." << endl;
-        }
-        while (!temp.empty()) {
-            cout << *temp.front();
-            pop_heap(temp.begin(), temp.end(), priority());
-            temp.pop_back();
-
+    if (temp.empty()) {
+        cout << "No commands in queue." << endl;
+    } else {
+        for (int i = 0; i < temp.size(); i++) {
+            cout << temp[i];
         }
     }
 
     cout << "\nAvailable Commands: \n";
 
-    {
-        lock_guard<mutex> lock(commandMutex);
-
-        for (const auto& cmd : availableCommands) {
-            cout << *cmd;
-        }
+    for (const auto& cmd : data::commandList) {
+        cout << cmd;
     }
 
     cout << "\n************************************\n";
@@ -128,36 +119,6 @@ void display_loop() {
         * Notes: 
         */
     }
-}
-
-vector<Command> queue = {};
-vector<Command> join_queue = {};
-
-    //-------Data Structures----------------------------------
-    /* Available Command Hash Table
-    *  Table of all available commands. Vector index is used as command ID
-    */
-namespace data {
-    Command* cmd[] = {
-        new Command("Terminate", 1),
-        new Command("Initialize", 1),
-        new RotorCommand("Init_Rotors", 2, Rotor::All),
-        new ActionCommand("Takeoff", 2, Action::TAKE_OFF), 
-        new CameraCommand("Camera_Init" ,2, CameraMode::ON)
-    };
-
-    /* Command Heap (main structure)
-    *   min heap for scheduler thread
-    *   root node will run. Schedule Thread will add all new commands from newCmdHeap to this
-    */
-    vector<Command> cmdHeap;
-    
-    /* New Command Heap
-    *   min Heap for interface thread
-    *   queues commands while schedule thread is running
-    *   Allows each thread to run asynchronously
-    */
-    vector<Command> newCmdHeap = {*cmd[1], *cmd[2], *cmd[3], *cmd[4]};
 }
 
 // Logs the command that gets sent

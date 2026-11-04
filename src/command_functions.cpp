@@ -6,8 +6,9 @@ This is where all of the functions for the commands will be implemented
 #include "actions.h"
 #include "camera.h"
 #include "abstract.h"
-#include <iostream>
-using namespace std;
+
+#include <vector>
+#include <algorithm>
 
 
 /*----------Rotor Commands------------*/
