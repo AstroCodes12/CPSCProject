@@ -18,7 +18,7 @@ class ActionCommand : public Command {
 private:
     Action actionType;
 public:
-    ActionCommand(string d, int p, Action a) : Command(d, p), actionType(a){};
+    ActionCommand(string d, int t, int p, Action a) : Command(d, t, p), actionType(a){};
     ActionCommand();
     void update_action(Action);
 };

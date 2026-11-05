@@ -12,7 +12,7 @@ class Command {
      int timeStep;
     public:
      int priority;
-     Command(string d, int p) : description(d), priority(p){};
+     Command(string d, int t, int p) : description(d), timeStep(t), priority(p){};
      Command();
      
      string get_description();

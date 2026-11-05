@@ -22,7 +22,7 @@ class CameraCommand : public Command {
     private:
         CameraMode mode;
     public:
-        CameraCommand(string d, int p, CameraMode c) : Command(d, p), mode(c){};
+        CameraCommand(string d, int t, int p, CameraMode c) : Command(d, t, p), mode(c){};
         CameraCommand();
 };
 

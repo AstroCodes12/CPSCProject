@@ -4,7 +4,6 @@ This is the main file that will be called
 #include "abstract.h"
 #include "rotors.h"
 #include "command_functions.cpp"
-#include "scheduleFunctions.cpp"
 
 
 #include <thread>
@@ -17,13 +16,15 @@ bool shouldEnd = false; // This bool will be used to signal the threads to end w
     *  Table of all available commands. Vector index is used as command ID
     */
 namespace data {
-    Command* cmd[] = {
-        new Command("Terminate", 1),
-        new Command("Initialize", 1),
-        new RotorCommand("Init_Rotors", 2, Rotor::All),
-        new ActionCommand("Takeoff", 2, Action::TAKE_OFF), 
-        new CameraCommand("Camera_Init" ,2, CameraMode::ON)
-    };
+    
+        Command Terminate = Command("Terminate", 1, 1);
+        Command INIT = Command("Initialize", 1, 1);
+        Command RotorINIT = RotorCommand("Init_Rotors", 2, 10, Rotor::All);
+        Command ActionINIT = ActionCommand("Takeoff", 2, 10, Action::TAKE_OFF); 
+        Command camINIT = CameraCommand("Camera_Init", 2, 10, CameraMode::ON);
+
+    /* Command List*/
+    vector<Command> commandList = {Terminate, INIT, RotorINIT, ActionINIT, camINIT};
 
     /* Command Heap (main structure)
     *   min heap for scheduler thread
@@ -36,38 +37,33 @@ namespace data {
     *   queues commands while schedule thread is running
     *   Allows each thread to run asynchronously
     */
-    vector<Command> newCmdHeap = {*cmd[1], *cmd[2], *cmd[3], *cmd[4]};
-
-    /* Command List
-    */
-   vector<Command> commandList = {};
+    vector<Command> newCmdHeap = {commandList[1], commandList[2], commandList[3], commandList[4]};
 }
 
 /* TODO:
 * Command Page Function
 *   Prints all the commands in the schedule loop
 *   Prompts to enter create or send (explain how to enter correctly)
+*
+* Terminate Function(?)
+*   ends loop and closes threading
 */
-void cmd_page() {
+void term_program() {
+    cout << "Terminating program..." << endl;
+    cout << "Program terminated." << endl;
+    shouldEnd = true;
+}
+
+void cmd_page(const vector<Command> temp) {
     cout << "\n********** COMMAND DASHBOARD **********\n" << endl;
     cout << "\nCurrent Command Queue: \n" << endl;
-
-    const vector<Command> temp = data::cmdHeap; // Create a copy of the queue to avoid it being modified mid print
-
-    make_heap(temp.begin(), temp.end(), priority());
 
     if (temp.empty()) {
         cout << "No commands in queue." << endl;
     } else {
         for (int i = 0; i < temp.size(); i++) {
-            cout << temp[i];
+            cout << i << " " << temp[i];
         }
-    }
-
-    cout << "\nAvailable Commands: \n";
-
-    for (const auto& cmd : data::commandList) {
-        cout << cmd;
     }
 
     cout << "\n************************************\n";
@@ -83,11 +79,19 @@ void cmd_page() {
     switch(choice) {
         case 1:
             // Call create command function
-            create_cmd();
+            create(data::commandList);
             break;
         case 2:
+            int cmdChoice;
             // Call send command function
-            send_cmd();
+            cout << "\nAvailable Commands: \n";
+
+            for (int i = 0; i < data::commandList.size(); i++) {
+                cout << i << " " << data::commandList[i];
+            }
+            cout << "which command would you like to send: \n";
+            cin >> cmdChoice;
+            send(data::cmdHeap, data::commandList[cmdChoice]);
             break;
         case 3:
             term_program();
@@ -102,15 +106,7 @@ void cmd_page() {
 /*
 * Add New Command Function(?)
 *   Adds to both scheduler and display heaps
-
-* Terminate Function(?)
-*   ends loop and closes threading
 */
-void term_program() {
-    cout << "Terminating program..." << endl;
-    cout << "Program terminated." << endl;
-    shouldEnd = true;
-}
 
 /*
 * Run Command Function (add to log)
@@ -155,6 +151,9 @@ void display_loop() {
         /*
         * Notes: 
         */
+
+        cmd_page(data::cmdHeap);
+
     }
 }
 
@@ -165,12 +164,6 @@ void logCommand(Command sent) {
     ofstream log(LOG_FILE, ios::app);
     log << sent;
     log.close();
-}
-
-void sendCommand(Command toSend) {
-    // Command Sent!
-    data::cmdHeap.push_back(toSend);
-    push_heap(data::cmdHeap.begin(), data::cmdHeap.end(), priority());
 }
 
 // This function will be used to combine both heaps into one
@@ -214,23 +207,18 @@ void schedule_loop(vector<Command> &queue, vector<Command> &join_queue) {
         
         // Get and pop from the heap/queue
         Command toSend = queue.front();
-        pop_heap(queue.begin(), queue.end());
+        pop_heap(queue.begin(), queue.end(), priority());
         
         logCommand(toSend);
-        if (toSend == *data::cmd[0]) { // 0 = terminate
+        if (toSend == data::Terminate) { // 0 = terminate
             shouldEnd = true;
             break;
         }
-        sendCommand(toSend);
+        send(data::newCmdHeap, toSend);
         _sleep(toSend.get_timestep() / 10); // from stdlib.h
     }
 }
 
-struct priority{
-    bool operator()(const Command& c1,const Command& c2) const{
-        return c1.priority>c2.priority;
-    }
-};
 
 
 int main() {
@@ -240,10 +228,10 @@ int main() {
     threads.push_back(thread(display_loop)); // We could do this in this main but it might be easier in it's own function
 
     //-------Data Structures----------------------------------
-    /* Command Heap (main structure)*/
+    //Command Heap (main structure)
     make_heap(data::cmdHeap.begin(), data::cmdHeap.end(), priority());
     
-    /* New Command Heap*/
+    //New Command Heap
     make_heap(data::newCmdHeap.begin(), data::newCmdHeap.end(), priority());
 
     // shouldEnd can change when a end command is input.

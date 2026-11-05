@@ -21,7 +21,7 @@ class RotorCommand : public Command {
     private:
      Rotor rotorID;
     public:
-     RotorCommand(string d, int p, Rotor r) : Command(d, p), rotorID(r){};
+     RotorCommand(string d, int t, int p, Rotor r) : Command(d, t, p), rotorID(r){};
      RotorCommand();
      void update_rotorID(Rotor rotorID);
 };

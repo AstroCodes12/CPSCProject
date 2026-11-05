@@ -147,7 +147,7 @@ Command::Command() {
 
 struct priority{
     bool operator()(const Command& c1,const Command& c2) const{
-        return c1.priority<c2.priority;
+        return c1.priority>c2.priority;
     }
 };
 
