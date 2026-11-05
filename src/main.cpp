@@ -6,6 +6,7 @@ This is the main file that will be called
 #include "command_functions.cpp"
 #include "scheduleFunctions.cpp"
 
+
 #include <thread>
 #include <fstream>
 
@@ -75,6 +76,26 @@ void cmd_page() {
     cout << "2. Send Command\n";
     cout << "3. Terminate Program\n";
     cout << "\nPlease enter your choice: ";
+
+    int choice;
+    cin >> choice;
+
+    switch(choice) {
+        case 1:
+            // Call create command function
+            create_cmd();
+            break;
+        case 2:
+            // Call send command function
+            send_cmd();
+            break;
+        case 3:
+            term_program();
+            break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+            break;
+    }
 }
 
 
@@ -84,7 +105,14 @@ void cmd_page() {
 
 * Terminate Function(?)
 *   ends loop and closes threading
+*/
+void term_program() {
+    cout << "Terminating program..." << endl;
+    cout << "Program terminated." << endl;
+    shouldEnd = true;
+}
 
+/*
 * Run Command Function (add to log)
 *   Adds command to log
 *   sleeps thread for timeStep % 10
@@ -93,13 +121,22 @@ void cmd_page() {
 * Create Command function
 *   Walks user thru making a command (what type (child) of command, enter all variables)
 *   Adds command to available command table
+*/
+void create_cmd() {
+    
+}
 
+/*
 * Send Command Function
 *   Allows user to send existing Command with command name
 *   Searches available commands
 *   Adds command to new command heap
 *   runs heap sort
 */
+
+void send_cmd() {
+    
+}
 
 void display_loop() {
     while (true) {
