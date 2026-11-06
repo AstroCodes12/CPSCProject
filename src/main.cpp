@@ -159,6 +159,7 @@ void combine_heaps() {
         data::cmdHeap.push_back(data::newCmdHeap[i]);
     }
     make_heap(data::cmdHeap.begin(), data::cmdHeap.end(), priority());
+    data::newCmdHeap.clear();
 }
 
 void schedule_loop() {
@@ -209,7 +210,7 @@ void schedule_loop() {
             shouldEnd = true;
             break;
         }
-        send(newCmdHeap, toSend);
+        // send(newCmdHeap, toSend);
         this_thread::sleep_for(chrono::seconds(toSend.get_timestep() / 10));
     }
 }
