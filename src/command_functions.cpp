@@ -92,7 +92,8 @@ int Command::get_timestep(){
 }
 
 ostream& operator<<(ostream& os, Command c) {
-    os << " | Description: " << c.description << " | TimeStep: " << c.timeStep << " | Priority: " << c.priority << endl;
+    // Change this to make it line up perfectly
+    os << " | Description: " << c.description << " | TimeStep: " << c.timeStep << " | Priority: " << c.priority;
     return os;
 }
 

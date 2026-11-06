@@ -5,7 +5,6 @@ This is the main file that will be called
 #include "rotors.h"
 #include "command_functions.cpp"
 
-
 #include <thread>
 #include <fstream>
 #include <climits>
@@ -17,12 +16,13 @@ bool shouldEnd = false; // This bool will be used to signal the threads to end w
     *  Table of all available commands. Vector index is used as command ID
     */
 namespace data {
-    
-        Command Terminate = Command("Terminate", 1, 1);
-        Command INIT = Command("Initialize", 1, 1);
-        Command RotorINIT = RotorCommand("Init_Rotors", 2, 10, Rotor::All);
-        Command ActionINIT = ActionCommand("Takeoff", 2, 10, Action::TAKE_OFF); 
-        Command camINIT = CameraCommand("Camera_Init", 2, 10, CameraMode::ON);
+    Command Terminate = Command("Terminate", 1, 1);
+    Command INIT = Command("Initialize", 1, 1);
+    Command RotorINIT = RotorCommand("Init_Rotors", 2, 10, Rotor::All);
+    Command ActionINIT = ActionCommand("Takeoff", 2, 10, Action::TAKE_OFF); 
+    Command camINIT = CameraCommand("Camera_Init", 2, 10, CameraMode::ON);
+
+    int uptime = 0;
 
     /* Command List*/
     vector<Command> commandList = {Terminate, INIT, RotorINIT, ActionINIT, camINIT};
@@ -68,7 +68,7 @@ void cmd_page(const vector<Command> temp) {
         cout << "No commands in queue." << endl;
     } else {
         for (int i = 0; i < temp.size(); i++) {
-            cout << i << " " << temp[i];
+            cout << i << " " << temp[i] << endl;
         }
     }
 
@@ -97,7 +97,7 @@ void cmd_page(const vector<Command> temp) {
             cout << "\nAvailable Commands: \n";
 
             for (int i = 0; i < data::commandList.size(); i++) {
-                cout << i << " " << data::commandList[i];
+                cout << i << " " << data::commandList[i] << endl;
             }
             cout << "which command would you like to send: \n";
             cin >> cmdChoice;
@@ -156,9 +156,20 @@ void display_loop() {
 const string LOG_FILE = "log.txt"; // we could change this based on an arg sent to main when run
 
 void log_command(Command sent) {
+    data::uptime += sent.get_timestep();
     ofstream log(LOG_FILE, ios::app);
-    log << sent;
+    log << sent << " | Uptime: " << data::uptime << endl;
     log.close();
+}
+
+void log(string s) {
+    ofstream log(LOG_FILE, ios::app);
+    log << s << endl;
+    log.close();
+}
+
+void send_command(Command toSend) {
+    // Command Sent to the drone! (This is where that code would be if we connected it up but it is just a simulation)
 }
 
 // This function will be used to combine both heaps into one
@@ -202,11 +213,6 @@ void schedule_loop() {
         if (cmdHeap.empty()) {
             continue;
         }
-        
-        /*
-            THERE IS SOMETHING WRONG WITH THIS!!
-            the cmdHeap doesn't get removed so there is an infinite loop of it adding to the log somewhere. I couldn't figure out where it is atm.
-        */
 
         // Get and pop from the heap/queue
         pop_heap(cmdHeap.begin(), cmdHeap.end(), priority());
@@ -218,7 +224,7 @@ void schedule_loop() {
             shouldEnd = true;
             break;
         }
-        // send(newCmdHeap, toSend);
+        send_command(toSend);
         this_thread::sleep_for(chrono::seconds(toSend.get_timestep() / 10));
     }
 }
@@ -230,6 +236,8 @@ int main() {
     vector<thread> threads;
     threads.push_back(thread(schedule_loop));
     threads.push_back(thread(display_loop));
+
+    log("Started");
 
     //-------Data Structures----------------------------------
     //Command Heap (main structure)
