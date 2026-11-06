@@ -118,7 +118,7 @@ Command::Command() {
                 cin.ignore(INT_MAX, '\n');
                 priority = 11;
             }
-            if (priority > 0 && priority < 10) {
+            if (priority >= 0 && priority <= 10) {
                 pass = true;
             } else {
                 cout << "Invalid priority, try again 1-10: ";
