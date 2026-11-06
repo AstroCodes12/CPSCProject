@@ -8,6 +8,7 @@ This is the main file that will be called
 
 #include <thread>
 #include <fstream>
+#include <climits>
 
 bool shouldEnd = false; // This bool will be used to signal the threads to end when a terminate command is sent
 
@@ -56,8 +57,7 @@ void term_program() {
 
 enum InputChoices {
     CREATE=1, // starting at 1 so rest work
-    SEND,
-    TERMINATE
+    SEND
 };
 
 void cmd_page(const vector<Command> temp) {
@@ -76,10 +76,15 @@ void cmd_page(const vector<Command> temp) {
 
     cout << "1. Create Command\n";
     cout << "2. Send Command\n";
-    cout << "3. Terminate Program\n";
     cout << "\nPlease enter your choice: ";
     int choice;
     cin >> choice;
+    while (!cin || choice <= 0 || choice > 2) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "Please enter a valid number: ";
+        cin >> choice;
+    }
 
     switch(choice) {
         case CREATE:
@@ -97,9 +102,9 @@ void cmd_page(const vector<Command> temp) {
             cout << "which command would you like to send: \n";
             cin >> cmdChoice;
             send(data::cmdHeap, data::commandList[cmdChoice]);
-            break;
-        case TERMINATE:
-            term_program(); // we should change this to a send command so it doesn't stop mid cycle
+            if (data::commandList[cmdChoice] == data::Terminate) {
+                shouldEnd = true;
+            }
             break;
         default:
             cout << "Invalid choice. Please try again." << endl;
@@ -140,6 +145,9 @@ void display_loop() {
         * Notes: 
         */
 
+        if (shouldEnd) {
+            break;
+        }
         cmd_page(data::cmdHeap);
     }
 }
