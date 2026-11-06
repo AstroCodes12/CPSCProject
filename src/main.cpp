@@ -54,6 +54,12 @@ void term_program() {
     shouldEnd = true;
 }
 
+enum InputChoices {
+    CREATE=1, // starting at 1 so rest work
+    SEND,
+    TERMINATE
+};
+
 void cmd_page(const vector<Command> temp) {
     cout << "\n********** COMMAND DASHBOARD **********\n" << endl;
     cout << "\nCurrent Command Queue: \n" << endl;
@@ -72,16 +78,15 @@ void cmd_page(const vector<Command> temp) {
     cout << "2. Send Command\n";
     cout << "3. Terminate Program\n";
     cout << "\nPlease enter your choice: ";
-
     int choice;
     cin >> choice;
 
     switch(choice) {
-        case 1:
+        case CREATE:
             // Call create command function
             create(data::commandList);
             break;
-        case 2:
+        case SEND:
             int cmdChoice;
             // Call send command function
             cout << "\nAvailable Commands: \n";
@@ -93,8 +98,8 @@ void cmd_page(const vector<Command> temp) {
             cin >> cmdChoice;
             send(data::cmdHeap, data::commandList[cmdChoice]);
             break;
-        case 3:
-            term_program();
+        case TERMINATE:
+            term_program(); // we should change this to a send command so it doesn't stop mid cycle
             break;
         default:
             cout << "Invalid choice. Please try again." << endl;
@@ -102,44 +107,28 @@ void cmd_page(const vector<Command> temp) {
     }
 }
 
-
 /*
-* Add New Command Function(?)
+* Add New Command Function(?) ✅
 *   Adds to both scheduler and display heaps
-*/
 
-/*
-* Run Command Function (add to log)
-*   Adds command to log
-*   sleeps thread for timeStep % 10
-*   Removes command from heap
+* Run Command Function (add to log) ✅
+*   Adds command to log ✅
+*   sleeps thread for timeStep / 10 ✅
+*   Removes command from heap ✅
 
-* Create Command function
-*   Walks user thru making a command (what type (child) of command, enter all variables)
-*   Adds command to available command table
-*/
-void create_cmd() {
-    
-}
-
-/*
-* Send Command Function
+* Send Command Function ✅
 *   Allows user to send existing Command with command name
 *   Searches available commands
 *   Adds command to new command heap
 *   runs heap sort
 */
 
-void send_cmd() {
-    
-}
-
 void display_loop() {
     while (true) {
         /*
         * 
-        * print command page (make function to do this)
-        * prompt to enter create or send (make function to do this)
+        * print command page (make function to do this) ✅
+        * prompt to enter create or send (make function to do this) ✅
         *   if create:
         *       run create
         *   if send:
@@ -148,19 +137,17 @@ void display_loop() {
         * 
         * return to top
 
-        /*
         * Notes: 
         */
 
         cmd_page(data::cmdHeap);
-
     }
 }
 
 // Logs the command that gets sent
 const string LOG_FILE = "log.txt"; // we could change this based on an arg sent to main when run
-// Logs the command that gets sent
-void logCommand(Command sent) {
+
+void log_command(Command sent) {
     ofstream log(LOG_FILE, ios::app);
     log << sent;
     log.close();
@@ -174,7 +161,7 @@ void combine_heaps() {
     make_heap(data::cmdHeap.begin(), data::cmdHeap.end(), priority());
 }
 
-void schedule_loop(vector<Command> &queue, vector<Command> &join_queue) {
+void schedule_loop() {
     while (true) {
         /*
         * If heap is empty:
@@ -196,26 +183,34 @@ void schedule_loop(vector<Command> &queue, vector<Command> &join_queue) {
         *  return to top
         */
 
+        using namespace data;
+
         // check if there is/are new commands to be added
-        if (!join_queue.empty()) {
+        if (!newCmdHeap.empty()) {
             combine_heaps();
         }
         // if there are no commands restart the loop
-        if (queue.empty()) {
+        if (cmdHeap.empty()) {
             continue;
         }
         
+        /*
+            THERE IS SOMETHING WRONG WITH THIS!!
+            the cmdHeap doesn't get removed so there is an infinite loop of it adding to the log somewhere. I couldn't figure out where it is atm.
+        */
+
         // Get and pop from the heap/queue
-        Command toSend = queue.front();
-        pop_heap(queue.begin(), queue.end(), priority());
+        pop_heap(cmdHeap.begin(), cmdHeap.end(), priority());
+        Command toSend = cmdHeap.back();
+        cmdHeap.pop_back();
         
-        logCommand(toSend);
+        log_command(toSend);
         if (toSend == data::Terminate) { // 0 = terminate
             shouldEnd = true;
             break;
         }
-        send(data::newCmdHeap, toSend);
-        _sleep(toSend.get_timestep() / 10); // from stdlib.h
+        send(newCmdHeap, toSend);
+        this_thread::sleep_for(chrono::seconds(toSend.get_timestep() / 10));
     }
 }
 
@@ -225,7 +220,7 @@ int main() {
     //Threading
     vector<thread> threads;
     threads.push_back(thread(schedule_loop));
-    threads.push_back(thread(display_loop)); // We could do this in this main but it might be easier in it's own function
+    threads.push_back(thread(display_loop));
 
     //-------Data Structures----------------------------------
     //Command Heap (main structure)
