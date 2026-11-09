@@ -14,6 +14,9 @@ class Command {
      int priority;
      Command(string d, int t, int p) : description(d), timeStep(t), priority(p){};
      Command();
+     ~Command() {
+        cout << "Command Destroyed\n";
+     }
      
      string get_description();
      int get_timestep();

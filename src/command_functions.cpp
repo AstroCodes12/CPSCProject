@@ -65,6 +65,7 @@ void ActionCommand::update_action(Action a) {
 /*----------Camera Commands------------*/
 CameraCommand::CameraCommand() : Command() {
     int inTemp;
+    float inAperture;
     bool pass = false;
     cout << "(1) Turn On\n(2) Infrared Mode\n(3) RGB Mode\n(4) Grayscale Mode\n(5) Turn Off\n" << "What Camera function would you like to use: \n";
     while (!pass) {
@@ -81,7 +82,52 @@ CameraCommand::CameraCommand() : Command() {
             cout << "Invalid Input, try 1-5: ";
         }
     }
+
+    inTemp = 0;
+    cout << "What Focal Length should the lens be at (18-250): ";
+    cin >> inTemp;
+    while(!cin || inTemp > 250 || inTemp < 18) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "Not a valid number, try 18-250: ";
+        cin >> inTemp;
+    }
+
+    cout << "What Aperature should the lense be set to: (1.2 - 22.0): ";
+    cin >> inAperture;
+    while(!cin || inAperture < 1.2 || inAperture > 22.0) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "Invalid Aperature, try 1.2-22.0: ";
+        cin >> inAperture;
+    }
+
+    camlens= {inTemp, inAperture};
 }
+
+Lens::Lens(int fl, float ap) {
+    int inTemp = 0;
+    float inAperture = 0;
+
+    cout << "What Focal Length should the lens be at (18-250): ";
+    cin >> inTemp;
+    while(!cin || inTemp > 250 || inTemp < 18) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "Not a valid number, try 18-250: ";
+        cin >> inTemp;
+    }
+
+    cout << "What Aperature should the lense be set to: (1.2 - 22.0): ";
+    cin >> inAperture;
+    while(!cin || inAperture < 1.2 || inAperture > 22.0) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "Invalid Aperature, try 1.2-22.0: ";
+        cin >> inAperture;
+    }
+}
+
 /*----------Abstract Commands------------*/
 string Command::get_description(){
     return description;

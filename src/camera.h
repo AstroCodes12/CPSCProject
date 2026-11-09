@@ -21,9 +21,21 @@ enum class CameraMode {
 class CameraCommand : public Command {
     private:
         CameraMode mode;
+        Lens camlens;
     public:
         CameraCommand(string d, int t, int p, CameraMode c) : Command(d, t, p), mode(c){};
         CameraCommand();
+};
+
+class Lens {
+    private:
+     int focalLength;
+     float aperature;
+    public: 
+     Lens(int fl = 18, float ap = 1.2) : focalLength(fl), aperature(ap){};
+     ~Lens() {
+        cout << "Lens removed\n";
+     }
 };
 
 #endif
