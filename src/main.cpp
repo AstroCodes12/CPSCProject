@@ -3,7 +3,8 @@ This is the main file that will be called
 */
 #include "abstract.h"
 #include "rotors.h"
-#include "command_functions.cpp"
+#include "actions.h"
+#include "camera.h"
 
 #include <thread>
 #include <fstream>
