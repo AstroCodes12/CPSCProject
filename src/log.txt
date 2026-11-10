@@ -48,3 +48,43 @@ Started
  | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 5
  | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 7
  | Description: Terminate | TimeStep: 1 | Priority: 1 | Uptime: 8
+Started
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 1
+ | Description: Init_Rotors | TimeStep: 2 | Priority: 10 | Uptime: 3
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 5
+ | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 7
+ | Description: delay | TimeStep: 30 | Priority: 1 | Uptime: 37
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 38
+ | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 40
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 42
+ | Description: Init_Rotors | TimeStep: 2 | Priority: 10 | Uptime: 44
+ | Description: test | TimeStep: 30 | Priority: 2 | Uptime: 74
+ | Description: test | TimeStep: 30 | Priority: 2 | Uptime: 104
+ | Description: test | TimeStep: 30 | Priority: 2 | Uptime: 134
+Started
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 1
+ | Description: Init_Rotors | TimeStep: 2 | Priority: 10 | Uptime: 3
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 5
+ | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 7
+Started
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 1
+ | Description: Init_Rotors | TimeStep: 2 | Priority: 10 | Uptime: 3
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 5
+ | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 7
+Started
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 1
+Started
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 1
+ | Description: Init_Rotors | TimeStep: 2 | Priority: 10 | Uptime: 3
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 5
+ | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 7
+Started
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 1
+ | Description: Init_Rotors | TimeStep: 2 | Priority: 10 | Uptime: 3
+Started
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 1
+ | Description: Init_Rotors | TimeStep: 2 | Priority: 10 | Uptime: 3
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 5
+ | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 7
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 9
+ | Description: Terminate | TimeStep: 1 | Priority: 1 | Uptime: 10

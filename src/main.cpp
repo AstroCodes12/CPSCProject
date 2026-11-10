@@ -17,7 +17,7 @@ bool shouldEnd = false; // This bool will be used to signal the threads to end w
     *  Table of all available commands. Vector index is used as command ID
     */
 namespace data {
-    Command Terminate = Command("Terminate", 1, 1);
+    Command Terminate = Command("Terminate", 0, 1);
     Command INIT = Command("Initialize", 1, 1);
     Command RotorINIT = RotorCommand("Init_Rotors", 2, 10, Rotor::All);
     Command ActionINIT = ActionCommand("Takeoff", 2, 10, Action::TAKE_OFF); 
@@ -83,8 +83,7 @@ void cmd_page(const vector<Command> temp) {
     while (!cin || choice <= 0 || choice > 2) {
         cin.clear();
         cin.ignore(INT_MAX, '\n');
-        cout << "Please enter a valid number: ";
-        cin >> choice;
+        throw(choice);
     }
 
     switch(choice) {
@@ -102,6 +101,13 @@ void cmd_page(const vector<Command> temp) {
             }
             cout << "which command would you like to send: \n";
             cin >> cmdChoice;
+            while(!cin || cmdChoice > data::commandList.size() - 1 || cmdChoice < 0) {
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+                cout << "Invalid Command, try again: ";
+                cin >> cmdChoice;
+            }
+
             send(data::cmdHeap, data::commandList[cmdChoice]);
             if (data::commandList[cmdChoice] == data::Terminate) {
                 shouldEnd = true;
@@ -149,7 +155,12 @@ void display_loop() {
         if (shouldEnd) {
             break;
         }
-        cmd_page(data::cmdHeap);
+        try {
+            cmd_page(data::cmdHeap);
+        } catch (int n) {
+            cout << "Invalid Option: " << n << endl;
+            term_program();
+        }
     }
 }
 
@@ -159,12 +170,18 @@ const string LOG_FILE = "log.txt"; // we could change this based on an arg sent 
 void log_command(Command& sent) {
     data::uptime += sent.get_timestep();
     ofstream log(LOG_FILE, ios::app);
+    if(!log.is_open()) {
+        throw(string("Log Filed Failed to Open"));
+    }
     log << sent << " | Uptime: " << data::uptime << endl;
     log.close();
 }
 
 void log(const string& s) {
     ofstream log(LOG_FILE, ios::app);
+    if(!log.is_open()) {
+        throw(string("Log File faild to open"));
+    }
     log << s << endl;
     log.close();
 }
@@ -205,6 +222,10 @@ void schedule_loop() {
         */
 
         using namespace data;
+        //checks if should end
+        if (shouldEnd) {
+            break;
+        }
 
         // check if there is/are new commands to be added
         if (!newCmdHeap.empty()) {
@@ -220,7 +241,12 @@ void schedule_loop() {
         pop_heap(cmdHeap.begin(), cmdHeap.end(), priority());
         cmdHeap.pop_back();
         
-        log_command(toSend);
+        try {
+            log_command(toSend);
+        } catch(string n) {
+            cout << "Error: " << n << endl;
+        }
+
         if (toSend == data::Terminate) { // 0 = terminate
             shouldEnd = true;
             break;
@@ -238,8 +264,11 @@ int main() {
     threads.push_back(thread(schedule_loop));
     threads.push_back(thread(display_loop));
 
-    log("Started");
-
+    try {
+        log("Started");
+    } catch (string n) {
+        cout << "Error: " << n << endl;
+    }
     //-------Data Structures----------------------------------
     //Command Heap (main structure)
     make_heap(data::cmdHeap.begin(), data::cmdHeap.end(), priority());
