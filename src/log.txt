@@ -35,3 +35,16 @@ Started
  | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 7
  | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 9
  | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 11
+ | Description: Take | TimeStep: 10 | Priority: 5 | Uptime: 21
+Started
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 1
+ | Description: Init_Rotors | TimeStep: 2 | Priority: 10 | Uptime: 3
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 5
+ | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 7
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 9
+Started
+ | Description: Initialize | TimeStep: 1 | Priority: 1 | Uptime: 1
+ | Description: Init_Rotors | TimeStep: 2 | Priority: 10 | Uptime: 3
+ | Description: Camera_Init | TimeStep: 2 | Priority: 10 | Uptime: 5
+ | Description: Takeoff | TimeStep: 2 | Priority: 10 | Uptime: 7
+ | Description: Terminate | TimeStep: 1 | Priority: 1 | Uptime: 8

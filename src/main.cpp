@@ -163,7 +163,7 @@ void log_command(Command& sent) {
     log.close();
 }
 
-void log(string& s) {
+void log(const string& s) {
     ofstream log(LOG_FILE, ios::app);
     log << s << endl;
     log.close();
