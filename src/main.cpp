@@ -156,14 +156,14 @@ void display_loop() {
 // Logs the command that gets sent
 const string LOG_FILE = "log.txt"; // we could change this based on an arg sent to main when run
 
-void log_command(Command sent) {
+void log_command(Command& sent) {
     data::uptime += sent.get_timestep();
     ofstream log(LOG_FILE, ios::app);
     log << sent << " | Uptime: " << data::uptime << endl;
     log.close();
 }
 
-void log(string s) {
+void log(string& s) {
     ofstream log(LOG_FILE, ios::app);
     log << s << endl;
     log.close();
@@ -214,10 +214,10 @@ void schedule_loop() {
         if (cmdHeap.empty()) {
             continue;
         }
-
+        Command toSend = cmdHeap.front();
+        this_thread::sleep_for(chrono::seconds(toSend.get_timestep()));
         // Get and pop from the heap/queue
         pop_heap(cmdHeap.begin(), cmdHeap.end(), priority());
-        Command toSend = cmdHeap.back();
         cmdHeap.pop_back();
         
         log_command(toSend);
@@ -225,8 +225,8 @@ void schedule_loop() {
             shouldEnd = true;
             break;
         }
-        send_command(toSend);
-        this_thread::sleep_for(chrono::seconds(toSend.get_timestep() / 10));
+        send_command(toSend); //to physically send command to drone. Not implemented because we have no drones
+
     }
 }
 

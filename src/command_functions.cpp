@@ -5,10 +5,9 @@ This is where all of the functions for the commands will be implemented
 #include "rotors.h"
 #include "actions.h"
 #include "camera.h"
+
 #include "abstract.h"
 
-#include <vector>
-#include <algorithm>
 
 
 /*----------Rotor Commands------------*/
@@ -102,7 +101,7 @@ CameraCommand::CameraCommand() : Command() {
         cin >> inAperture;
     }
 
-    camlens= {inTemp, inAperture};
+    camlens = new Lens(inTemp, inAperture);
 }
 
 /*----------Abstract Commands------------*/
@@ -114,13 +113,13 @@ int Command::get_timestep(){
     return timeStep;
 }
 
-ostream& operator<<(ostream& os, Command c) {
+ostream& operator<<(ostream& os, const Command& c) {
     // Change this to make it line up perfectly
     os << " | Description: " << c.description << " | TimeStep: " << c.timeStep << " | Priority: " << c.priority;
     return os;
 }
 
-bool operator==(Command c1, Command c2){
+bool operator==(const Command& c1, const Command& c2){
     if (c1.description == c2.description && c1.priority == c2.priority && c1.timeStep == c2.timeStep) {
         return true;
     } else {
@@ -169,11 +168,9 @@ Command::Command() {
 
 /*------------General Functions------------*/
 
-struct priority{
-    bool operator()(const Command& c1,const Command& c2) const{
-        return c1.priority>c2.priority;
-    }
-};
+bool priority::operator()(const Command& c1,const Command& c2) const{
+    return c1.priority>c2.priority;
+}
 
 void create(vector<Command>& cmdHeap) {
     int userIn;
@@ -206,7 +203,7 @@ void create(vector<Command>& cmdHeap) {
 
 }
 
-void send(vector<Command>& cmdHeap, Command cmd) {
+void send(vector<Command>& cmdHeap, const Command& cmd) {
     cmdHeap.push_back(cmd);
     push_heap(cmdHeap.begin(), cmdHeap.end(), priority()); //time complexity of O(logn)
 }

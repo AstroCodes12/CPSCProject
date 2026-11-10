@@ -32,7 +32,7 @@ class Lens {
 class CameraCommand : public Command {
     private:
         CameraMode mode;
-        Lens camlens;
+        Lens* camlens;
     public:
         CameraCommand(string d, int t, int p, CameraMode c) : Command(d, t, p), mode(c){};
         CameraCommand();
