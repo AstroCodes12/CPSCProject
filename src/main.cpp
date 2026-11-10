@@ -69,7 +69,9 @@ void cmd_page(const vector<Command> temp) {
         cout << "No commands in queue." << endl;
     } else {
         for (int i = 0; i < temp.size(); i++) {
-            cout << i << " " << temp[i] << endl;
+            cout.width(3);
+            cout << left << i;
+            cout << temp[i] << endl;
         }
     }
 
@@ -97,7 +99,9 @@ void cmd_page(const vector<Command> temp) {
             cout << "\nAvailable Commands: \n";
 
             for (int i = 0; i < data::commandList.size(); i++) {
-                cout << i << " " << data::commandList[i] << endl;
+                cout.width(3);
+                cout << left << i;
+                cout << data::commandList[i] << endl;
             }
             cout << "which command would you like to send: \n";
             cin >> cmdChoice;

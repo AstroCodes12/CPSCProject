@@ -1,1 +1,4 @@
 src/output/*
+*.exe*
+*log.txt*
+*.plist*

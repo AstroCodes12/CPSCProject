@@ -114,8 +114,15 @@ int Command::get_timestep(){
 }
 
 ostream& operator<<(ostream& os, const Command& c) {
-    // Change this to make it line up perfectly
-    os << " | Description: " << c.description << " | TimeStep: " << c.timeStep << " | Priority: " << c.priority;
+    os << " | Description: ";
+    os.width(18);
+    os << left << c.description;
+    os << " | TimeStep: ";
+    os.width(3);
+    os << c.timeStep;
+    os << " | Priority: ";
+    os.width(2);
+    os << c.priority;
     return os;
 }
 
@@ -174,33 +181,32 @@ bool priority::operator()(const Command& c1,const Command& c2) const{
 
 void create(vector<Command>& cmdHeap) {
     int userIn;
-    bool pass = false;
     cout << "(1) General\n(2) Rotor\n(3) Action\n(4) Camera\n Which Command Type: ";
-    while (!pass) {
+    cin >> userIn;
+    while (!cin || userIn < 1 || userIn > 4) {
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "Invalid Command, Try again with number 1-4: ";
         cin >> userIn;
-        if (!cin) {
-            cin.clear();
-            cin.ignore(INT_MAX, '\n');
-            userIn = 10;
-        }
-        if (userIn == 1){
+    }
+    switch (userIn) {
+        case 1:
             cmdHeap.push_back(Command());
-            pass = true;
-        } else if (userIn == 2) {
+            break;
+        case 2:
             cmdHeap.push_back(RotorCommand());
-            pass = true;
-        } else if(userIn == 3) {
+            break;
+        case 3:
             cmdHeap.push_back(ActionCommand());
-            pass = true;
-        } else if (userIn == 4) {
+            break;
+        case 4:
             cmdHeap.push_back(CameraCommand());
-            pass = true;
-        } else {
-            cout << "Invalid Command, Try again with number 1-4: ";
-        }
+            break;
+        default:
+            cout << "How did this happen";
+            exit(1);
     }
     push_heap(cmdHeap.begin(), cmdHeap.end(), priority()); //O(logn)
-
 }
 
 void send(vector<Command>& cmdHeap, const Command& cmd) {
