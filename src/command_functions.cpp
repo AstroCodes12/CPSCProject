@@ -137,7 +137,7 @@ bool operator==(const Command& c1, const Command& c2){
 Command::Command() {
     bool pass = false;
     cout << "Describe the Command in 1-2 words (e.g. Initialize Camera): \n";
-        getline(cin, description);
+        getline(cin, description, '\n');
         
         cout << "Now set the priority 1-10 (1 being most important): \n";
 
