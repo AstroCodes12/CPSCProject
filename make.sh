@@ -1,8 +1,8 @@
-if [ -f "lect29" ]; then
-    rm lect29
+if [ -f "CommandScheduler" ]; then
+    rm CommandScheduler
 fi
 
-g++ -g src/*.cpp -o lect29
+g++ -g src/*.cpp -o CommandScheduler
 
 if [ $? -ne 0 ]; then
     echo ""
@@ -12,9 +12,9 @@ if [ $? -ne 0 ]; then
 fi
 
 echo ""
-echo "[SUCCESS] lect29.exe created!"
+echo "[SUCCESS] CommandScheduler.exe created!"
 echo "Running..."
 echo "---------------------------------------"
-./lect29
+./CommandScheduler
 
 read -p "Press [Enter] to continue..."

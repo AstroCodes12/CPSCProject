@@ -1,8 +1,8 @@
 @echo off
 
-if exist lect29.exe del lect29.exe
+if exist CommandScheduler.exe del CommandScheduler.exe
 
-g++ -g src/*.cpp -o lect29.exe
+g++ -g src/*.cpp -o CommandScheduler.exe
 
 if %errorlevel% neq 0 (
     echo.
@@ -12,8 +12,8 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [SUCCESS] lect29.exe created!
+echo [SUCCESS] CommandScheduler.exe created!
 echo Running...
 echo ---------------------------------------
-.\lect29.exe
+.\CommandScheduler.exe
 pause
